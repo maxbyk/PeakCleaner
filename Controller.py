@@ -81,7 +81,6 @@ class MainController(object):
         copyfile(self.filename, workfile)
         QApplication.processEvents()
 
-
         if self.error_checker():
 
             self.update_label('Working...','orange')
@@ -89,11 +88,11 @@ class MainController(object):
 
             self.ref_number = self.model.read_header(workfile)
 
+            self.model.clean_dspacings(workfile, self.ref_number)
+
             if self.widget.ui.clean_diamonds_cb.isChecked():
                 self.bad_peaks = self.model.analyze_xy(workfile, self.ref_number)
                 self.model.delete_peaks(workfile, self.bad_peaks, self.ref_number)
-
-            self.model.clean_dspacings(workfile, self.ref_number)
 
             pyperclip.copy('rd t "' + workfile[:-7]+'"')
             self.update_label('Finished', 'green')

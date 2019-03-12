@@ -92,10 +92,6 @@ class PyCleanerModel(QtCore.QObject):
         for i in range(number_of_peaks):
             position = 312 + i * 168  # reflection start position
 
-            f.seek(position + 24)  # 2theta position
-            theta_byte = f.read(8)
-            theta = unpack('d', theta_byte)
-
             f.seek(position + 44)  # x - coordinate
             x_byte = f.read(2)
 
@@ -115,6 +111,7 @@ class PyCleanerModel(QtCore.QObject):
         f.close()
 
     def read_header(self, filename):
+        '''reads thte first bytes in the .tab file and returns the total number of peaks'''
         f = open(filename, 'r+b')
         f.seek(0)
         number_of_peaks = f.read(4)
