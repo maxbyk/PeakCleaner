@@ -252,7 +252,7 @@
      <item row="0" column="0" colspan="2">
       <widget class="QLineEdit" name="fileinp_text">
        <property name="text">
-        <string>D:\Current data\test_script\enst\s1\ESPERANTO\1.tabbin</string>
+        <string/>
        </property>
        <property name="placeholderText">
         <string>provide .tabbin file</string>
