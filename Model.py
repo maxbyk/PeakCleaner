@@ -1,33 +1,18 @@
 from PyQt5 import QtCore
 import numpy as np
 import math
-import logging
 from struct import *
-
-logging.basicConfig()
-logger = logging.getLogger()
-logger.setLevel(logging.NOTSET)
 
 class PyCleanerModel(QtCore.QObject):
 
     def __init__(self):
         super(PyCleanerModel, self).__init__()
-        self.counter = 0
-
-        self.bad_peaks = []
-        self.bad_d_peaks = []
-
-    def create_bad_thetas(self):
-        self.bad_thetas = []
-
-        for bad_d in self.dspacings:
-            self.bad_thetas.append(2*self.d_to_theta(bad_d))
 
     def clean_dspacings(self, filename, number_of_peaks):
 
         f = open(filename, 'r+b')
 
-        self.create_bad_thetas()
+        self.bad_thetas = self.create_bad_thetas(self.dspacings)
 
         for i in range(number_of_peaks):
             position = 312 + i * 168  # reflection start position
@@ -42,15 +27,29 @@ class PyCleanerModel(QtCore.QObject):
                     f.write(b'\x04\x00')
         f.close()
 
+    def create_bad_thetas(self, dspacings):
+        '''Creates a list of 2theta values from a list of d-values'''
+
+        bad_thetas = []
+
+        for bad_d in dspacings:
+            bad_thetas.append(2*self.d_to_theta(bad_d))
+
+        return bad_thetas
+
     def theta_to_d(self,theta):
+        '''transforms theta given in radians to d-spacing'''
         d = self.wavelength/(2*math.sin(theta))
         return d
 
     def d_to_theta(self,d):
+        '''transforms d in angstoms to theta in radians'''
         theta = math.asin(self.wavelength/(2*d))
         return theta
 
-    def analyze_xy(self, filename, number_of_peaks):
+    def analyze_xy(self, filename, number_of_peaks, tolerance=2):
+
+        '''returns a list of [x,y] detector coordinates that are common between "tolerance" number of peaks'''
 
         f = open(filename,'r+b')
 
@@ -79,7 +78,7 @@ class PyCleanerModel(QtCore.QObject):
         bad_peaks = []
 
         for i in range(peaks_unique.shape[0]):
-            if counters[i] > 2:
+            if counters[i] > tolerance:
                 bad_peaks.append([peaks_unique[i][0], peaks_unique[i][1]])
 
         f.close()
@@ -97,9 +96,6 @@ class PyCleanerModel(QtCore.QObject):
             theta_byte = f.read(8)
             theta = unpack('d', theta_byte)
 
-            f.seek(position + 32)  # intensity
-            intensity_byte = f.read(4)
-
             f.seek(position + 44)  # x - coordinate
             x_byte = f.read(2)
 
@@ -108,7 +104,6 @@ class PyCleanerModel(QtCore.QObject):
 
             f.seek(1118 + number_of_peaks * 168 + i * 32)
 
-            intensity = int.from_bytes(intensity_byte, byteorder='little')
             x = int.from_bytes(x_byte, byteorder='little')
             y = int.from_bytes(y_byte, byteorder='little')
 
@@ -117,7 +112,6 @@ class PyCleanerModel(QtCore.QObject):
             if comb in bad_peaks:
                 f.write(b'\x03\x00')
 
-            # out.append([x,y,intensity,theta[0]])
         f.close()
 
     def read_header(self, filename):
