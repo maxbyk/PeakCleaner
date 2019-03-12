@@ -85,7 +85,7 @@ class PyCleanerModel(QtCore.QObject):
 
         return bad_peaks
 
-    def delete_peaks(self, filename, bad_peaks, number_of_peaks):
+    def delete_peaks(self, filename, bad_peaks, number_of_peaks, tolerance=3):
 
         f = open(filename, 'r+b')
 
@@ -105,8 +105,15 @@ class PyCleanerModel(QtCore.QObject):
 
             comb = [x, y]
 
+            bad_coordinates = []
+            for i in range(2*tolerance+1):
+                for j in range(2*tolerance+1):
+                    bad_coordinates.append([x-tolerance+i,y-tolerance+j])
+
             if comb in bad_peaks:
                 f.write(b'\x03\x00')
+            elif any(i in bad_coordinates for i in bad_peaks):
+                f.write(b'\x02\x00')
 
         f.close()
 

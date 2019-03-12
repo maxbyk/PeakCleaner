@@ -18,6 +18,7 @@ class MainController(object):
         self.check_wavelength()
         self.check_deltatheta()
         self.check_dmin()
+        self.check_tolerance()
 
         self.dialog = DspacingsWidget(self.dspacings)
         self.create_signals()
@@ -37,6 +38,7 @@ class MainController(object):
         self.widget.ui.loadcif_btn.clicked.connect(self.check_cif)
         self.widget.ui.dspacings_btn.clicked.connect(self.dspacings_btn_clicked)
         self.dialog.ui.table_done_btn.clicked.connect(self.get_dspacings_from_dialog)
+        self.widget.ui.tolerance_inp.editingFinished.connect(self.check_tolerance)
 
     def dspacings_btn_clicked(self):
         self.check_dspacings()
@@ -92,7 +94,7 @@ class MainController(object):
 
             if self.widget.ui.clean_diamonds_cb.isChecked():
                 self.bad_peaks = self.model.analyze_xy(workfile, self.ref_number)
-                self.model.delete_peaks(workfile, self.bad_peaks, self.ref_number)
+                self.model.delete_peaks(workfile, self.bad_peaks, self.ref_number, self.tolerance)
 
             pyperclip.copy('rd t "' + workfile[:-7]+'"')
             self.update_label('Finished', 'green')
@@ -187,8 +189,19 @@ class MainController(object):
         elif not self.check_deltatheta():
             self.update_label('Wrong delta theta','red')
             return False
+        elif not self.check_tolerance():
+            self.update_label('Wrong tolerance', 'red')
         else:
             self.check_filename()
+            return False
+
+    def check_tolerance(self):
+        try:
+            self.tolerance = int(self.widget.ui.tolerance_inp.text())
+            self.check_filename()
+            return True
+        except:
+            self.update_label('Wrong tolerance', 'red')
             return False
 
     def check_cif(self):
