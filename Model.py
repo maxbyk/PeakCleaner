@@ -2,6 +2,7 @@ from PyQt5 import QtCore
 import numpy as np
 import math
 from struct import *
+from PyQt5.QtWidgets import QApplication
 
 class PyCleanerModel(QtCore.QObject):
 
@@ -25,6 +26,9 @@ class PyCleanerModel(QtCore.QObject):
                 if theta[0] > bad_theta - self.deltatheta and theta[0] < bad_theta + self.deltatheta:
                     f.seek(1118 + number_of_peaks * 168 + i * 32)
                     f.write(b'\x04\x00')
+
+            QApplication.processEvents()
+
         f.close()
 
     def create_bad_thetas(self, dspacings):
@@ -114,6 +118,8 @@ class PyCleanerModel(QtCore.QObject):
                 f.write(b'\x03\x00')
             elif any(i in bad_coordinates for i in bad_peaks):
                 f.write(b'\x02\x00')
+
+            QApplication.processEvents()
 
         f.close()
 
