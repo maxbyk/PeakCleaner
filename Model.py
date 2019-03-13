@@ -79,11 +79,11 @@ class PyCleanerModel(QtCore.QObject):
 
         peaks_unique, counters = np.unique(peaks_array, return_counts=True, axis=0)
 
-        bad_peaks = []
+        bad_peaks = set()
 
         for i in range(peaks_unique.shape[0]):
             if counters[i] > tolerance:
-                bad_peaks.append([peaks_unique[i][0], peaks_unique[i][1]])
+                bad_peaks.add((peaks_unique[i][0], peaks_unique[i][1]))
 
         f.close()
 
@@ -107,15 +107,17 @@ class PyCleanerModel(QtCore.QObject):
             x = int.from_bytes(x_byte, byteorder='little')
             y = int.from_bytes(y_byte, byteorder='little')
 
-            comb = [x, y]
+            comb = (x, y)
 
-            bad_coordinates = []
+            bad_coordinates = set()
+
             for i in range(2*tolerance+1):
                 for j in range(2*tolerance+1):
-                    bad_coordinates.append([x-tolerance+i,y-tolerance+j])
+                    bad_coordinates.add((x-tolerance+i,y-tolerance+j))
 
             if comb in bad_peaks:
                 f.write(b'\x03\x00')
+
             elif any(i in bad_coordinates for i in bad_peaks):
                 f.write(b'\x02\x00')
 
