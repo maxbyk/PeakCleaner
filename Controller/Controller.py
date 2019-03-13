@@ -1,12 +1,12 @@
-from View import MainWidget
-from Model import PyCleanerModel
+from Widgets.View import MainWidget
+from Model.Model import PyCleanerModel
 from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5.QtCore import Qt
 import os
 import pyperclip
-from CifPhase import CifConverter
+from Model.CifPhase import CifConverter
 import numpy as np
-from DWidget import DspacingsWidget
+from Widgets.DWidget import DspacingsWidget
 from shutil import copyfile
 
 class MainController(object):

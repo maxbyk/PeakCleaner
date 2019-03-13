@@ -10,7 +10,7 @@ except ImportError:
 from math import degrees
 
 from CifFile import ReadCif
-from jcpds import jcpds
+from Model.jcpds import jcpds
 
 import numpy as np
 import json

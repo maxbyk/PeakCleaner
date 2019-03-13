@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem
 from qtpy import QtGui
-from DspacingsWidget import Ui_DSpacings
+from Widgets.DspacingsWidget import Ui_DSpacings
 from PyQt5 import QtGui
 
 class DspacingsWidget(QWidget):

@@ -1,5 +1,5 @@
 __author__ = 'Maxim Bykov @ Egor Koemets'
-from Controller import MainController
+from Controller.Controller import MainController
 import sys
 from PyQt5.QtWidgets import QApplication
 
