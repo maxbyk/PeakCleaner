@@ -203,8 +203,6 @@ class Ui_MainWindow(object):
         self.tolerance_inp.setText(_translate("MainWindow", "0"))
 
 
-
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

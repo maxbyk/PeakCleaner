@@ -10,6 +10,7 @@ class PyCleanerModel(QtCore.QObject):
         super(PyCleanerModel, self).__init__()
 
     def clean_dspacings(self, filename, number_of_peaks):
+        '''Moves peaks with bad d-spacings to the group 5'''
 
         f = open(filename, 'r+b')
 
@@ -41,7 +42,7 @@ class PyCleanerModel(QtCore.QObject):
 
         return bad_thetas
 
-    def theta_to_d(self,theta):
+    def theta_to_d(self, theta):
         '''transforms theta given in radians to d-spacing'''
         d = self.wavelength/(2*math.sin(theta))
         return d
@@ -53,7 +54,7 @@ class PyCleanerModel(QtCore.QObject):
 
     def analyze_xy(self, filename, number_of_peaks, tolerance=2):
 
-        '''returns a list of [x,y] detector coordinates that are common between "tolerance" number of peaks'''
+        '''returns a set of [x,y] detector coordinates that are common between "tolerance" number of peaks'''
 
         f = open(filename,'r+b')
 
@@ -90,6 +91,8 @@ class PyCleanerModel(QtCore.QObject):
         return bad_peaks
 
     def delete_peaks(self, filename, bad_peaks, number_of_peaks, tolerance=3):
+        '''Move all peaks in a file that are present in "bad peaks" to group 4
+            Move all peaks within "tolerance" number of pixels around the bad peak to group 3'''
 
         f = open(filename, 'r+b')
 

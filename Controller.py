@@ -19,7 +19,6 @@ class MainController(object):
         self.check_deltatheta()
         self.check_dmin()
         self.check_tolerance()
-
         self.dialog = DspacingsWidget(self.dspacings)
         self.create_signals()
 
@@ -84,7 +83,7 @@ class MainController(object):
         QApplication.processEvents()
 
         if self.error_checker():
-
+            QApplication.processEvents()
             self.update_label('Working...','orange')
             QApplication.processEvents()
 

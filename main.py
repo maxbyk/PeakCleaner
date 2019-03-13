@@ -1,3 +1,4 @@
+__author__ = 'Maxim Bykov @ Egor Koemets'
 from Controller import MainController
 import sys
 from PyQt5.QtWidgets import QApplication
@@ -8,7 +9,6 @@ class App(QApplication):
         self.main_controller = MainController()
         self.main_controller.show_window()
 
-sys.setrecursionlimit(5000)
 if __name__ == '__main__':
     app = App(sys.argv)
     sys.exit(app.exec_())
