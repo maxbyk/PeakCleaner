@@ -205,7 +205,7 @@ class MainController(object):
 
     def check_cif(self):
 
-        cif_filename = QFileDialog.getOpenFileName()
+        cif_filename = QFileDialog.getOpenFileName(filter = 'cif(*.cif)')
 
         int_cutoff = float(self.widget.ui.int_cutoff.text())
         cif_converter = CifConverter(self.wavelength, self.dmin, int_cutoff)
