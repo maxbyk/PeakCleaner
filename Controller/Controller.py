@@ -66,7 +66,7 @@ class MainController(object):
         self.dialog.close()
 
     def open_folder_btn_clicked(self):
-        filename = QFileDialog.getOpenFileName()
+        filename = QFileDialog.getOpenFileName(filter = 'tabbin(*.tabbin)')
         self.widget.ui.fileinp_text.setText(filename[0])
         self.check_filename()
 
