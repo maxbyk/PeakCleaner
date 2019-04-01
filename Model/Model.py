@@ -24,7 +24,8 @@ class PyCleanerModel(QtCore.QObject):
             theta = unpack('d', theta_byte)
 
             for bad_theta in self.bad_thetas:
-                if theta[0] > bad_theta - self.deltatheta and theta[0] < bad_theta + self.deltatheta:
+                delta = self.dtheta[0] + self.dtheta[1]*bad_theta + self.dtheta[2]*bad_theta*bad_theta
+                if bad_theta - delta < theta[0] < bad_theta + delta:
                     f.seek(1118 + number_of_peaks * 168 + i * 32)
                     f.write(b'\x04\x00')
 

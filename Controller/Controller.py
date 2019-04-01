@@ -162,6 +162,7 @@ class MainController(object):
     def check_deltatheta(self):
         try:
             self.model.deltatheta = float(self.widget.ui.deltatheta_inp.text())*3.14/180
+            self.model.dtheta = [float(self.widget.ui.deltatheta_inp.text())*3.14/180, float(self.widget.ui.deltatheta_linear.text())*3.14/180, float(self.widget.ui.deltatheta_square.text())*3.14/180]
             self.check_filename()
             return True
         except:
