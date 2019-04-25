@@ -202,10 +202,10 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "PeakСleanerPro 0.0.3"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "PeakСleaner 0.3 - M. Bykov, E. Koemets 2019"))
         self.fileinp_text.setPlaceholderText(_translate("MainWindow", "provide .tabbin file"))
         self.label_2.setText(_translate("MainWindow", "<html><head/><body><p>Wavelength</p></body></html>"))
-        self.int_cutoff.setText(_translate("MainWindow", "10"))
+        self.int_cutoff.setText(_translate("MainWindow", "5"))
         self.label_5.setText(_translate("MainWindow", "<html><head/><body><p>Minimum d-spacing for cif</p></body></html>"))
         self.dspacings_line.setPlaceholderText(_translate("MainWindow", "separated by space"))
         self.logtext.setText(_translate("MainWindow", "<html><head/><body><p>Please provide .tabbin file (<span style=\" color:#ff0000;\">wd t</span>)</p></body></html>"))
