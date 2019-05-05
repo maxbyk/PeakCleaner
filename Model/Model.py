@@ -17,15 +17,18 @@ class PyCleanerModel(QtCore.QObject):
         self.bad_thetas = self.create_bad_thetas(self.dspacings)
 
         for i in range(number_of_peaks):
+            print(number_of_peaks)
             position = 312 + i * 168  # reflection start position
 
-            f.seek(position + 24)  # 2theta position
-            theta_byte = f.read(8)
-            theta = unpack('d', theta_byte)
+            f.seek(position + 24)  # lambda/d
+            ld_byte = f.read(8)
+            ld = unpack('d', ld_byte)
+
+            twotheta = 2*math.asin(ld[0]/2)
 
             for bad_theta in self.bad_thetas:
                 delta = self.dtheta[0] + self.dtheta[1]*bad_theta + self.dtheta[2]*bad_theta*bad_theta
-                if bad_theta - delta < theta[0] < bad_theta + delta:
+                if bad_theta - delta < twotheta < bad_theta + delta:
                     f.seek(1118 + number_of_peaks * 168 + i * 32)
                     f.write(b'\x04\x00')
 
