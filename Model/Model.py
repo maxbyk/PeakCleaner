@@ -17,7 +17,7 @@ class PyCleanerModel(QtCore.QObject):
         self.bad_thetas = self.create_bad_thetas(self.dspacings)
 
         for i in range(number_of_peaks):
-            print(number_of_peaks)
+
             position = 312 + i * 168  # reflection start position
 
             f.seek(position + 24)  # lambda/d
