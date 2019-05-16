@@ -3,11 +3,41 @@ import numpy as np
 import math
 from struct import *
 from PyQt5.QtWidgets import QApplication
+import fabio
+from matplotlib import pyplot
 
 class PyCleanerModel(QtCore.QObject):
 
     def __init__(self):
         super(PyCleanerModel, self).__init__()
+
+    def clean_peaks_from_mask(self, filename, number_of_peaks, mask_filename):
+
+        f = open(filename, 'r+b')
+
+        mask = fabio.open(mask_filename)
+        pyplot.imshow(mask.data)
+        pyplot.show()
+
+        for i in range(number_of_peaks):
+
+            position = 312 + i * 168  # reflection start position
+
+            f.seek(position + 44)  # x - coordinate
+            x_byte = f.read(2)
+
+            f.seek(position + 46)  # y - coordinate
+            y_byte = f.read(2)
+
+            x = int.from_bytes(x_byte, byteorder='little')
+            y = int.from_bytes(y_byte, byteorder='little')
+
+            if mask.data[x,y] == 1:
+                f.seek(1118 + number_of_peaks * 168 + i * 32)
+                f.write(b'\x04\x00')
+
+        f.close()
+
 
     def clean_dspacings(self, filename, number_of_peaks):
         '''Moves peaks with bad d-spacings to the group 5'''
@@ -126,7 +156,7 @@ class PyCleanerModel(QtCore.QObject):
                 f.write(b'\x03\x00')
 
             elif any(i in bad_coordinates for i in bad_peaks):
-                f.write(b'\x02\x00')
+                f.write(b'\x03\x00')
 
             QApplication.processEvents()
 

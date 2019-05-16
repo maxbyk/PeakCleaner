@@ -38,6 +38,14 @@ class MainController(object):
         self.widget.ui.dspacings_btn.clicked.connect(self.dspacings_btn_clicked)
         self.dialog.ui.table_done_btn.clicked.connect(self.get_dspacings_from_dialog)
         self.widget.ui.tolerance_inp.editingFinished.connect(self.check_tolerance)
+        self.widget.ui.opn_mask_btn.clicked.connect(self.opn_mask_btn_clicked)
+
+    def opn_mask_btn_clicked(self):
+        mask_filename = QFileDialog.getOpenFileName(filter = 'tif(*.tif)')
+        self.widget.ui.mask_lineedit.setText(mask_filename[0])
+
+        self.check_mask_filename()
+
 
     def dspacings_btn_clicked(self):
         self.check_dspacings()
@@ -90,6 +98,7 @@ class MainController(object):
             self.ref_number = self.model.read_header(workfile)
 
             self.model.clean_dspacings(workfile, self.ref_number)
+            self.model.clean_peaks_from_mask(workfile, self.ref_number, self.mask_filename)
 
             if self.widget.ui.clean_diamonds_cb.isChecked():
                 self.bad_peaks = self.model.analyze_xy(workfile, self.ref_number)
@@ -100,6 +109,9 @@ class MainController(object):
 
         else:
             return
+
+    def check_mask_filename(self):
+        self.mask_filename = self.widget.ui.mask_lineedit.text()
 
     def check_filename(self):
 
