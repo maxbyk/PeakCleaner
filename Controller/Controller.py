@@ -29,6 +29,7 @@ class MainController(object):
         self.widget.ui.opn_folder_btn.clicked.connect(self.open_folder_btn_clicked)
         self.widget.ui.do_btn.clicked.connect(self.clean_peaks)
         self.widget.ui.fileinp_text.textChanged.connect(self.check_filename)
+        self.widget.ui.mask_lineedit.textChanged.connect(self.check_mask_filename)
         self.widget.ui.wavelength_inp.textChanged.connect(self.check_wavelength)
         self.widget.ui.dspacings_line.editingFinished.connect(self.check_dspacings)
         self.widget.ui.deltatheta_inp.editingFinished.connect(self.check_deltatheta)
@@ -85,10 +86,14 @@ class MainController(object):
         self.check_deltatheta()
         self.check_dmin()
 
-        filename, filextension = os.path.splitext(self.filename)
-        workfile = filename + '_fixed.tabbin'
-        copyfile(self.filename, workfile)
-        QApplication.processEvents()
+        try:
+            filename, filextension = os.path.splitext(self.filename)
+            workfile = filename + '_fixed.tabbin'
+            copyfile(self.filename, workfile)
+        except:
+            self.update_label("File not found",'red')
+            return
+
 
         if self.error_checker():
             QApplication.processEvents()
@@ -98,7 +103,8 @@ class MainController(object):
             self.ref_number = self.model.read_header(workfile)
 
             self.model.clean_dspacings(workfile, self.ref_number)
-            self.model.clean_peaks_from_mask(workfile, self.ref_number, self.mask_filename)
+            if os.path.isfile(self.mask_filename):
+                self.model.clean_peaks_from_mask(workfile, self.ref_number, self.mask_filename)
 
             if self.widget.ui.clean_diamonds_cb.isChecked():
                 self.bad_peaks = self.model.analyze_xy(workfile, self.ref_number)
@@ -112,6 +118,21 @@ class MainController(object):
 
     def check_mask_filename(self):
         self.mask_filename = self.widget.ui.mask_lineedit.text()
+        filename, filextension = os.path.splitext(self.mask_filename)
+
+        if (filextension == '.tif' and os.path.isfile(self.mask_filename)) or self.widget.ui.mask_lineedit.text() == '':
+            self.update_label('Press Start', 'green')
+            self.check_filename()
+            return True
+
+        elif not os.path.isfile(self.mask_filename):
+
+            self.update_label('Mask file not found', 'red')
+            return False
+
+        elif filextension != '.tif':
+            self.update_label('Wrong mask file', 'red')
+            return False
 
     def check_filename(self):
 
@@ -186,7 +207,7 @@ class MainController(object):
         self.widget.ui.logtext.setStyleSheet('color:'+color)
 
     def error_checker(self):
-        if self.check_filename() and self.check_dspacings() and self.check_wavelength() and self.check_deltatheta() and self.check_dmin():
+        if self.check_filename() and self.check_dspacings() and self.check_wavelength() and self.check_deltatheta() and self.check_dmin() and self.check_mask_filename():
             self.update_label('Press Start', 'green')
             return True
         elif not self.check_wavelength():
@@ -203,6 +224,10 @@ class MainController(object):
             return False
         elif not self.check_tolerance():
             self.update_label('Wrong tolerance', 'red')
+            return False
+        elif not self.check_mask_filename():
+            self.update_label('Wrong mask','red')
+            return False
         else:
             self.check_filename()
             return False

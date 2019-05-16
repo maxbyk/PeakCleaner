@@ -14,10 +14,12 @@ class PyCleanerModel(QtCore.QObject):
     def clean_peaks_from_mask(self, filename, number_of_peaks, mask_filename):
 
         f = open(filename, 'r+b')
-
-        mask = fabio.open(mask_filename)
-        pyplot.imshow(mask.data)
-        pyplot.show()
+        try:
+            mask = fabio.open(mask_filename)
+            #pyplot.imshow(mask.data)
+            #pyplot.show()
+        except:
+            return
 
         for i in range(number_of_peaks):
 
