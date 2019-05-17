@@ -3,8 +3,7 @@ import numpy as np
 import math
 from struct import *
 from PyQt5.QtWidgets import QApplication
-import fabio
-from matplotlib import pyplot
+from PIL import Image
 
 class PyCleanerModel(QtCore.QObject):
 
@@ -15,9 +14,10 @@ class PyCleanerModel(QtCore.QObject):
 
         f = open(filename, 'r+b')
         try:
-            mask = fabio.open(mask_filename)
-            #pyplot.imshow(mask.data)
-            #pyplot.show()
+
+            im = Image.open(mask_filename)
+            im_data = np.array(im)
+
         except:
             return
 
@@ -34,7 +34,7 @@ class PyCleanerModel(QtCore.QObject):
             x = int.from_bytes(x_byte, byteorder='little')
             y = int.from_bytes(y_byte, byteorder='little')
 
-            if mask.data[x,y] == 1:
+            if im_data[x][y] == 1:
                 f.seek(1118 + number_of_peaks * 168 + i * 32)
                 f.write(b'\x04\x00')
 
