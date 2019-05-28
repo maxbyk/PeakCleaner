@@ -42,7 +42,7 @@ class MainController(object):
         self.widget.ui.opn_mask_btn.clicked.connect(self.opn_mask_btn_clicked)
 
     def opn_mask_btn_clicked(self):
-        mask_filename = QFileDialog.getOpenFileName(filter = 'tif(*.tif)')
+        mask_filename = QFileDialog.getOpenFileName(filter = 'mask(*.mask)')
         self.widget.ui.mask_lineedit.setText(mask_filename[0])
 
         self.check_mask_filename()
@@ -94,6 +94,15 @@ class MainController(object):
             self.update_label("File not found",'red')
             return
 
+        if self.widget.ui.p02mask_cb.isChecked():
+            self.beamline = "P02"
+        elif self.widget.ui.id15mask_cb.isChecked():
+            self.beamline = 'ID15'
+        elif self.widget.ui.iddmask_cb.isChecked():
+            self.beamline = "13IDD"
+        else:
+            self.beamline = ''
+
 
         if self.error_checker():
             QApplication.processEvents()
@@ -104,7 +113,7 @@ class MainController(object):
 
             self.model.clean_dspacings(workfile, self.ref_number)
             if os.path.isfile(self.mask_filename):
-                self.model.clean_peaks_from_mask(workfile, self.ref_number, self.mask_filename)
+                self.model.clean_peaks_from_mask(workfile, self.ref_number, self.mask_filename, self.beamline)
 
             if self.widget.ui.clean_diamonds_cb.isChecked():
                 self.bad_peaks = self.model.analyze_xy(workfile, self.ref_number)
@@ -120,7 +129,7 @@ class MainController(object):
         self.mask_filename = self.widget.ui.mask_lineedit.text()
         filename, filextension = os.path.splitext(self.mask_filename)
 
-        if (filextension == '.tif' and os.path.isfile(self.mask_filename)) or self.widget.ui.mask_lineedit.text() == '':
+        if ((filextension == '.tif' or filextension == '.mask') and os.path.isfile(self.mask_filename)) or self.widget.ui.mask_lineedit.text() == '':
             self.update_label('Press Start', 'green')
             self.check_filename()
             return True

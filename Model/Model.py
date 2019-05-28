@@ -10,7 +10,7 @@ class PyCleanerModel(QtCore.QObject):
     def __init__(self):
         super(PyCleanerModel, self).__init__()
 
-    def clean_peaks_from_mask(self, filename, number_of_peaks, mask_filename):
+    def clean_peaks_from_mask(self, filename, number_of_peaks, mask_filename, beamline):
 
         f = open(filename, 'r+b')
         try:
@@ -34,9 +34,18 @@ class PyCleanerModel(QtCore.QObject):
             x = int.from_bytes(x_byte, byteorder='little')
             y = int.from_bytes(y_byte, byteorder='little')
 
-            if im_data[x][y] == 1:
-                f.seek(1118 + number_of_peaks * 168 + i * 32)
-                f.write(b'\x04\x00')
+            ##
+            if beamline == "P02":
+                if im_data[x][y] == 1:
+                    f.seek(1118 + number_of_peaks * 168 + i * 32)
+                    f.write(b'\x04\x00')
+
+            elif beamline == "ID15":
+                if im_data[y][x-258]==1:
+                    f.seek(1118 + number_of_peaks * 168 + i * 32)
+                    f.write(b'\x04\x00')
+            else:
+                pass
 
         f.close()
 
