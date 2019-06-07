@@ -4,6 +4,7 @@ import math
 from struct import *
 from PyQt5.QtWidgets import QApplication
 from PIL import Image
+from matplotlib import pyplot
 
 class PyCleanerModel(QtCore.QObject):
 
@@ -42,6 +43,11 @@ class PyCleanerModel(QtCore.QObject):
 
             elif beamline == "ID15":
                 if im_data[y][x-258]==1:
+                    f.seek(1118 + number_of_peaks * 168 + i * 32)
+                    f.write(b'\x04\x00')
+
+            elif beamline == "13IDD":
+                if im_data[y][x-33] == 1:
                     f.seek(1118 + number_of_peaks * 168 + i * 32)
                     f.write(b'\x04\x00')
             else:
