@@ -1,7 +1,7 @@
 from Widgets.View import MainWidget
 from Model.Model import PyCleanerModel
 from PyQt5.QtWidgets import QApplication, QFileDialog
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
 import os
 import pyperclip
 from Model.CifPhase import CifConverter
@@ -21,9 +21,26 @@ class MainController(object):
         self.check_tolerance()
         self.dialog = DspacingsWidget(self.dspacings)
         self.create_signals()
+        self.connect_checkboxes()
 
     def show_window(self):
         self.widget.show()
+
+    def connect_checkboxes(self):
+        self.widget.ui.iddmask_cb.clicked.connect(lambda: self.update_cb('idd'))
+        self.widget.ui.id15mask_cb.clicked.connect(lambda: self.update_cb('id15'))
+        self.widget.ui.p02mask_cb.clicked.connect(lambda: self.update_cb('p02'))
+
+    def update_cb(self, emitter):
+        if emitter == 'p02' and self.widget.ui.p02mask_cb.isChecked():
+            self.widget.ui.id15mask_cb.setChecked(False)
+            self.widget.ui.iddmask_cb.setChecked(False)
+        if emitter == 'idd' and self.widget.ui.iddmask_cb.isChecked():
+            self.widget.ui.id15mask_cb.setChecked(False)
+            self.widget.ui.p02mask_cb.setChecked(False)
+        if emitter == 'id15' and self.widget.ui.id15mask_cb.isChecked():
+            self.widget.ui.iddmask_cb.setChecked(False)
+            self.widget.ui.p02mask_cb.setChecked(False)
 
     def create_signals(self):
         self.widget.ui.opn_folder_btn.clicked.connect(self.open_folder_btn_clicked)
